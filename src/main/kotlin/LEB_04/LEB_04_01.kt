@@ -22,7 +22,7 @@ fun main() {
     }
 
     val dictionary: MutableList<Word> = loadDictionary()
-    println(loadDictionary())
+
     while (true) {
         println(
             """
