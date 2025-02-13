@@ -8,14 +8,34 @@ data class Word(
     var correctAnswersCount: Int = 0,
 )
 
-fun main() {
-    val wordsFile: File = File("words.txt")
+val wordsFile: File = File("words.txt")
+val vocabulary: MutableList<Word> = mutableListOf()
+fun loadDictionary(): MutableList<Word> {
     val lines = wordsFile.readLines()
-    val dictionary: MutableList<Word> = mutableListOf()
     for (line in lines) {
-        val lineSplint = line.split("|")
-        val word = Word(lineSplint[0], lineSplint[1], correctAnswersCount = null ?: 0)
-        dictionary.add(word)
+        val lineSplit = line.split("|")
+        val word = Word(lineSplit[0], lineSplit[1], lineSplit[2].toIntOrNull() ?: 0)
+        vocabulary.add(word)
     }
-    println(dictionary)
+    return vocabulary
+}
+
+fun main() {
+    val dictionary: MutableList<Word> = loadDictionary()
+    while (true) {
+        println(
+            """
+            1 - Учить слова
+            2 - Статистика
+            0 - Выход
+        """.trimIndent()
+        )
+        val inputNumber = readln()
+        when (inputNumber) {
+            "1" -> println("Учить слова")
+            "2" -> println("Статистика")
+            "0" -> break
+            else -> println("Введите число 1,2 или 0")
+        }
+    }
 }
