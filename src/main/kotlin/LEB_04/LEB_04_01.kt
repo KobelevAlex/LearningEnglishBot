@@ -32,7 +32,30 @@ fun main() {
         )
         val inputNumber = readln()
         when (inputNumber) {
-            "1" -> println("Учить слова")
+            "1" -> {
+                while (true) {
+                    println("Учить слова")
+                    val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
+                    if (notLearnedList.isEmpty()) {
+                        println("Все слова в словаре выучены.")
+                        return
+                    }
+                    val questionWords = notLearnedList.shuffled().take(4)
+                    val correctAnswer = questionWords[1]
+                    val shuffledWord = questionWords.shuffled()
+                    println(
+                        """
+                        ${correctAnswer.original}:
+                         1 - ${shuffledWord[0].translate}
+                         2 - ${shuffledWord[1].translate}
+                         3 - ${shuffledWord[2].translate}
+                         4 - ${shuffledWord[3].translate}
+                    """.trimIndent()
+                    )
+                    val inputNumber = readln()
+                }
+            }
+
             "2" -> {
                 println("Статистика")
                 val listDictionary = dictionary.filter { it.correctAnswersCount >= 3 }
@@ -46,4 +69,5 @@ fun main() {
             else -> println("Введите число 1,2 или 0")
         }
     }
+
 }
