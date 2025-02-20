@@ -1,6 +1,11 @@
 package LEB_04
 
 import java.io.File
+import kotlin.random.Random
+
+const val NUMBER_ANSWERS = 4
+const val MINIMUM_CORRECT_ANSWERS = 3
+const val STEP_INCREASE = 1
 
 data class Word(
     val original: String,
@@ -35,24 +40,26 @@ fun main() {
             "1" -> {
                 while (true) {
                     println("Учить слова")
-                    val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
+                    val notLearnedList = dictionary.filter { it.correctAnswersCount < MINIMUM_CORRECT_ANSWERS }
                     if (notLearnedList.isEmpty()) {
                         println("Все слова в словаре выучены.")
                         return
                     }
-                    val questionWords = notLearnedList.shuffled().take(4)
-                    val correctAnswer = questionWords[1]
-                    val shuffledWord = questionWords.shuffled()
-                    println(
-                        """
-                        ${correctAnswer.original}:
-                         1 - ${shuffledWord[0].translate}
-                         2 - ${shuffledWord[1].translate}
-                         3 - ${shuffledWord[2].translate}
-                         4 - ${shuffledWord[3].translate}
-                    """.trimIndent()
+                    val questionWords = notLearnedList.shuffled().take(NUMBER_ANSWERS)
+                    val correctAnswerIndex = Random.nextInt(questionWords.size)
+                    val correctAnswer = questionWords[correctAnswerIndex]
+                    val shuffledWords = questionWords.toMutableList()
+                    shuffledWords.removeAt(correctAnswerIndex)
+                    shuffledWords.add(Random.nextInt(NUMBER_ANSWERS), correctAnswer)
+                    val optionsString = shuffledWords.mapIndexed { index, word ->
+                        " ${index + 1} - ${word.translate}"
+                    }.joinToString(
+                        separator = "\n",
+                        prefix = "${correctAnswer.original}:\n",
+                        postfix = "\nВведите '0' для выхода.\n"
                     )
-                    val inputNumber = readln()
+                    println(optionsString)
+                    val userAnswer = readln()
                 }
             }
 
@@ -69,5 +76,4 @@ fun main() {
             else -> println("Введите число 1,2 или 0")
         }
     }
-
 }
