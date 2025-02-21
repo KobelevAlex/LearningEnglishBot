@@ -25,6 +25,15 @@ fun loadDictionary(): MutableList<Word> {
     return vocabulary
 }
 
+fun saveDictionary() {
+    wordsFile.printWriter().use { out ->
+        vocabulary.forEach { word ->
+            out.println("${word.original}|${word.translate}|${word.correctAnswersCount}")
+        }
+    }
+}
+
+
 fun main() {
     val dictionary: MutableList<Word> = loadDictionary()
     while (true) {
@@ -45,21 +54,39 @@ fun main() {
                         println("Все слова в словаре выучены.")
                         return
                     }
-                    val questionWords = notLearnedList.shuffled().take(NUMBER_ANSWERS)
+                    val questionWords = if (notLearnedList.size >= NUMBER_ANSWERS) {
+                        notLearnedList.shuffled().take(NUMBER_ANSWERS)
+                    } else {
+                        notLearnedList.shuffled() // Берем все оставшиеся слова
+                    }
                     val correctAnswerIndex = Random.nextInt(questionWords.size)
+                    println(correctAnswerIndex)
                     val correctAnswer = questionWords[correctAnswerIndex]
                     val shuffledWords = questionWords.toMutableList()
                     shuffledWords.removeAt(correctAnswerIndex)
-                    shuffledWords.add(Random.nextInt(NUMBER_ANSWERS), correctAnswer)
+                    shuffledWords.add(Random.nextInt(questionWords.size), correctAnswer)
                     val optionsString = shuffledWords.mapIndexed { index, word ->
                         " ${index + 1} - ${word.translate}"
                     }.joinToString(
                         separator = "\n",
                         prefix = "${correctAnswer.original}:\n",
-                        postfix = "\nВведите '0' для выхода.\n"
+                        postfix = "\n ----------\n 0 - Меню\n"
                     )
                     println(optionsString)
                     val userAnswer = readln()
+                    if (userAnswer == "0") break
+                    val answerIndex = userAnswer.toIntOrNull()
+                    if (answerIndex in 1..NUMBER_ANSWERS) {
+                        if (shuffledWords[answerIndex!! - 1].original == correctAnswer.original) {
+                            println("Правильно!\n")
+                            correctAnswer.correctAnswersCount++
+                            saveDictionary()
+                        } else {
+                            println("Неправильно! Правильный ответ: ${correctAnswer.translate}\n")
+                        }
+                    } else {
+                        println("Введите число от 1 до 4 или '0' для выхода.")
+                    }
                 }
             }
 
