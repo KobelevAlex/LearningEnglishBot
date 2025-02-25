@@ -33,7 +33,6 @@ fun saveDictionary() {
     }
 }
 
-
 fun main() {
     val dictionary: MutableList<Word> = loadDictionary()
     while (true) {
@@ -60,7 +59,6 @@ fun main() {
                         notLearnedList.shuffled() // Берем все оставшиеся слова
                     }
                     val correctAnswerIndex = Random.nextInt(questionWords.size)
-                    println(correctAnswerIndex)
                     val correctAnswer = questionWords[correctAnswerIndex]
                     val shuffledWords = questionWords.toMutableList()
                     shuffledWords.removeAt(correctAnswerIndex)
@@ -77,7 +75,7 @@ fun main() {
                     if (userAnswer == "0") break
                     val answerIndex = userAnswer.toIntOrNull()
                     if (answerIndex in 1..NUMBER_ANSWERS) {
-                        if (shuffledWords[answerIndex!! - 1].original == correctAnswer.original) {
+                        if (shuffledWords[(answerIndex ?: 1) - 1].original == correctAnswer.original) {
                             println("Правильно!\n")
                             correctAnswer.correctAnswersCount++
                             saveDictionary()
