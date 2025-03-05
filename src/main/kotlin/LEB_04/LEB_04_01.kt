@@ -11,7 +11,12 @@ fun Question.questionToString(): String {
 }
 
 fun main() {
-    val trainer = LearnWordsTrainer()
+    val trainer = try {
+        LearnWordsTrainer(3, 4)
+    } catch (e: Exception) {
+        println("Невозможно загрузить словарь!")
+        return
+    }
     while (true) {
         println(
             """
@@ -24,14 +29,13 @@ fun main() {
         when (inputNumber) {
             "1" -> {
                 while (true) {
-                    println("Учить слова")
+                    println("Учить слова\n")
                     val question = trainer.getNextQuestion()
                     if (question == null) {
                         println("Все слова в словаре выучены.")
                         break
                     } else {
                         val optionString = question.questionToString()
-                        println("индекс - ${question.variants.indexOf(question.correctAnswer)}\n")
                         println(optionString)
                         val userAnswerInput = readln().toIntOrNull()
                         if (userAnswerInput == 0) {
@@ -40,9 +44,8 @@ fun main() {
                             if (trainer.checkAnswer(userAnswerInput?.minus(1))) {
                                 println("Правильно!\n")
                             } else {
-                                println("Неправильно! Правильный ответ: ${question.correctAnswer.translate}\n " +
-                                        "индекс - ${question.variants.indexOf(question.correctAnswer)}")
-                                println("Введите число от 1 до 4 или '0' для выхода.")
+                                println("Неправильно! Правильный ответ: ${question.correctAnswer.translate}\n ")
+                                println("Введите число от 1 до 4 или '0' для выхода.\n")
                             }
                         }
                     }
