@@ -1,10 +1,8 @@
 package LEB_04
 
 import java.io.File
-import kotlin.random.Random
-
-const val MINIMUM_CORRECT_ANSWERS = 3
-const val NUMBER_ANSWERS = 4
+import java.lang.IllegalStateException
+import java.lang.IndexOutOfBoundsException
 
 data class Word(
     val original: String,
@@ -24,23 +22,26 @@ data class Question(
     val correctAnswer: Word,
 )
 
-class LearnWordsTrainer {
+class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, private val countOfQuestionWords: Int = 4) {
     private var question: Question? = null
     private val vocabulary = loadDictionary()
     private fun loadDictionary(): MutableList<Word> {
-        val vocabulary: MutableList<Word> = mutableListOf()
-        val wordsFile: File = File("words.txt")
-        if (wordsFile.exists()) {
-            val lines = wordsFile.readLines()
-            for (line in lines) {
-                val lineSplit = line.split("|")
-                val word = Word(lineSplit[0], lineSplit[1], lineSplit[2].toIntOrNull() ?: 0)
-                vocabulary.add(word)
+        try {
+            val vocabulary: MutableList<Word> = mutableListOf()
+            val wordsFile: File = File("words.txt")
+            if (wordsFile.exists()) {
+                val lines = wordsFile.readLines()
+                for (line in lines) {
+                    val lineSplit = line.split("|")
+                    val word = Word(lineSplit[0], lineSplit[1], lineSplit[2].toIntOrNull() ?: 0)
+                    vocabulary.add(word)
+                }
             }
+            return vocabulary
+        } catch (e: IndexOutOfBoundsException) {
+            throw IllegalStateException("Не корректный файл")
         }
-        return vocabulary
     }
-
     private fun saveDictionary(words: MutableList<Word>) {
         val wordsFile: File = File("words.txt")
         wordsFile.writeText("")
@@ -50,7 +51,7 @@ class LearnWordsTrainer {
     }
 
     fun getStatistics(): Statistics {
-        val learnedWords = vocabulary.filter { it.correctAnswersCount >= MINIMUM_CORRECT_ANSWERS }
+        val learnedWords = vocabulary.filter { it.correctAnswersCount >= learnedAnswerCount }
         val totalCount = vocabulary.count()
         val learnedCount = learnedWords.count()
         val percent = (learnedCount * 100) / totalCount
@@ -58,20 +59,21 @@ class LearnWordsTrainer {
     }
 
     fun getNextQuestion(): Question? {
-        val notLearnedList = vocabulary.filter { it.correctAnswersCount < MINIMUM_CORRECT_ANSWERS }
+        val notLearnedList = vocabulary.filter { it.correctAnswersCount < learnedAnswerCount }
         if (notLearnedList.isEmpty()) return null
-        val questionWords = if (notLearnedList.size >= NUMBER_ANSWERS) {
-            notLearnedList.shuffled().take(NUMBER_ANSWERS)
-        } else {
+        val questionWords = if (notLearnedList.size < countOfQuestionWords) {
+            val learnedList = vocabulary.filter { it.correctAnswersCount >= learnedAnswerCount }.shuffled()
             notLearnedList.shuffled()
-        }
-        val correctAnswerIndex = Random.nextInt(questionWords.size)
-        val correctAnswer = questionWords[correctAnswerIndex]
-        val shuffledWords = questionWords.shuffled()
-        return Question(
-            variants = shuffledWords,
+                .take(countOfQuestionWords) + learnedList.take(countOfQuestionWords - notLearnedList.size)
+        } else {
+            notLearnedList.shuffled().take(countOfQuestionWords)
+        }.shuffled()
+        val correctAnswer = questionWords.random()
+        question = Question(
+            variants = questionWords,
             correctAnswer = correctAnswer,
         )
+        return question
     }
 
     fun checkAnswer(userAnswerIndex: Int?): Boolean {
