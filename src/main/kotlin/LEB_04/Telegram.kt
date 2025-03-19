@@ -7,13 +7,27 @@ import java.net.http.HttpResponse
 
 fun main(args: Array<String>) {
     val botToken = args[0]
-    val urlGetMe = "https://api.telegram.org/bot$botToken/getMe"
-    val urlGeUpdates = "https://api.telegram.org/bot$botToken/getUpdates"
+    var updateId = 0
+    while (true) {
+        Thread.sleep(2000)
+        val updates: String = getUpdates(botToken, updateId)
+        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+        val matchResult = messageTextRegex.find(updates)
+        if (matchResult != null) {
+            val text = matchResult.groups[1]?.value
+            println("Текст сообщения: $text")
+            val newUpdateId = updates.substringAfter("\"update_id\":").substringBefore(",").toInt()
+            updateId = newUpdateId + 1
+        }
+    }
+}
+
+fun getUpdates(botToken: String, updateId: Int): String {
+    val urlGetUpdates = "https://api.telegram.org/bot$botToken/getUpdates?offset=$updateId"
     val client = HttpClient.newBuilder().build()
-    val requestGetMe = HttpRequest.newBuilder().uri(URI.create(urlGetMe)).build()
-    val responseGetMe = client.send(requestGetMe, HttpResponse.BodyHandlers.ofString())
-    println(responseGetMe.body())
-    val requestGetMeGeUpdates = HttpRequest.newBuilder().uri(URI.create(urlGeUpdates)).build()
-    val responseGetMeGeUpdates = client.send(requestGetMeGeUpdates, HttpResponse.BodyHandlers.ofString())
-    println(responseGetMeGeUpdates.body())
+    val requestGetUpdates = HttpRequest.newBuilder()
+        .uri(URI.create(urlGetUpdates))
+        .build()
+    val responseGetUpdates = client.send(requestGetUpdates, HttpResponse.BodyHandlers.ofString())
+    return responseGetUpdates.body()
 }
