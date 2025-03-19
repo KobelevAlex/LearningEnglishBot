@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
         val matchResult = messageTextRegex.find(updates)
         if (matchResult != null) {
             val text = matchResult.groups[1]?.value
-            println("Текст сообщения: $text")
+            println("Текст сообщения - $text")
             val newUpdateId = updates.substringAfter("\"update_id\":").substringBefore(",").toInt()
             updateId = newUpdateId + 1
         }
