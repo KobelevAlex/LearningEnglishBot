@@ -47,7 +47,6 @@ fun main(args: Array<String>) {
         if (matchResultText != null && matchResultChatId != null && matchResultUpdateId != null) {
             val text = matchResultText.groups[1]?.value
             val chatId = matchResultChatId.groups[1]?.value
-            println("Id= $chatId")
             if (text != null && chatId != null) {
                 println("Текст сообщения: $text")
                 telegramBot.sendMessage(botToken, chatId, text)
