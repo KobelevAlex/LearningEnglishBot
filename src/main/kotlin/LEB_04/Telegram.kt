@@ -39,11 +39,11 @@ fun main(args: Array<String>) {
     val botToken = args[0]
     val telegramBot = TelegramBotService(botToken)
     var updateId = 0
+    val messageTextRegex: Regex = """"text":"(.*?)"""".toRegex()
+    val chatIdRegex: Regex = """"chat":\{"id":(\d+)""".toRegex()
+    val updateIdRegex: Regex = """"update_id":(\d+)""".toRegex()
     while (true) {
         Thread.sleep(2000)
-        val messageTextRegex: Regex = """"text":"(.*?)"""".toRegex()
-        val chatIdRegex: Regex = """"chat":\{"id":(\d+)""".toRegex()
-        val updateIdRegex: Regex = """"update_id":(\d+)""".toRegex()
         val updates: String = telegramBot.getUpdates(updateId)
         val matchResultText = messageTextRegex.find(updates)
         val matchResultChatId = chatIdRegex.find(updates)
