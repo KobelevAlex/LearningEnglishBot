@@ -1,4 +1,7 @@
-package LEB_04
+package ru.androidsprint.englishtrainer.console
+
+import ru.androidsprint.englishtrainer.treaner.LearnWordsTrainer
+import ru.androidsprint.englishtrainer.treaner.Question
 
 fun Question.questionToString(): String {
     return this.variants.mapIndexed { index, word ->

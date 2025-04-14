@@ -1,10 +1,9 @@
-LEB-02-01-wordFile
  hello|привет|0
  dog|собака|0
  cat|кошка|0
- thank you|спасибо|0
+ thank you|спасибо|3
  aple|яблоко|3
- hat|шляпа|0
+ hat|шляпа|3
  fish|рыба|0
  car|машина|0
  table|стол|0
