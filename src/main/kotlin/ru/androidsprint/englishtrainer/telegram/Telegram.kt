@@ -4,6 +4,7 @@ import ru.androidsprint.englishtrainer.treaner.LearnWordsTrainer
 
 const val STATISTICS_CLICKED = "statistics_clicked"
 const val LEARN_WORDS_CLICKED = "learn_word_clicked"
+const val START = "/start"
 
 fun main(args: Array<String>) {
     val botToken = args[0]
@@ -18,24 +19,20 @@ fun main(args: Array<String>) {
         Thread.sleep(2000)
         val updates: String = telegramBot.getUpdates(updateId)
         val matchResultText = messageTextRegex.find(updates)
-        val matchResultChatId = chatIdRegex.find(updates)
-        val matchResultUpdateId = updateIdRegex.find(updates)
         val matchDataRegex = dataRegex.find(updates)
-        if (matchResultText != null && matchResultChatId != null && matchResultUpdateId != null) {
+        if (matchResultText != null) {
             val text = matchResultText.groups[1]?.value
-            val chatId = matchResultChatId.groups[1]?.value
+            val newUpdateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
+            updateId = newUpdateId + 1
+            val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
             val data = matchDataRegex?.groups?.get(1)?.value
-            if (text != null && chatId != null) {
+            if (text != null) {
                 telegramBot.sendMessage(chatId, text)
-                val newUpdateId = matchResultUpdateId.groups[1]
-                    ?.value
-                    ?.toInt() ?: 0
-                updateId = newUpdateId + 1
             }
-            if (text?.lowercase() == "/start" && chatId != null) {
+            if (text?.lowercase() == START) {
                 telegramBot.sendMenu(chatId)
             }
-            if (data?.lowercase() == STATISTICS_CLICKED && chatId != null) {
+            if (data?.lowercase() == STATISTICS_CLICKED) {
                 val statistics = trainer.getStatistics()
                 val message =
                     "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n"

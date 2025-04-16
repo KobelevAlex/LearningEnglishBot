@@ -22,13 +22,17 @@ data class Question(
     val correctAnswer: Word,
 )
 
-class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, private val countOfQuestionWords: Int = 4) {
+class LearnWordsTrainer(
+    private val learnedAnswerCount: Int = 3,
+    private val countOfQuestionWords: Int = 4,
+) {
     private var question: Question? = null
-    private val vocabulary = loadDictionary()
+    val vocabulary = loadDictionary()
     private fun loadDictionary(): MutableList<Word> {
         try {
             val vocabulary: MutableList<Word> = mutableListOf()
             val wordsFile: File = File("words.txt")
+            wordsFile.createNewFile()
             if (wordsFile.exists()) {
                 val lines = wordsFile.readLines()
                 for (line in lines) {
@@ -42,6 +46,7 @@ class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, private val cou
             throw IllegalStateException("Не корректный файл")
         }
     }
+
     private fun saveDictionary(words: MutableList<Word>) {
         val wordsFile: File = File("words.txt")
         wordsFile.writeText("")
@@ -54,7 +59,9 @@ class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, private val cou
         val learnedWords = vocabulary.filter { it.correctAnswersCount >= learnedAnswerCount }
         val totalCount = vocabulary.count()
         val learnedCount = learnedWords.count()
-        val percent = (learnedCount * 100) / totalCount
+        val percent = if (learnedCount > 0) {
+            (learnedCount * 100) / totalCount
+        } else 0
         return Statistics(learnedWords, totalCount, learnedCount, percent)
     }
 

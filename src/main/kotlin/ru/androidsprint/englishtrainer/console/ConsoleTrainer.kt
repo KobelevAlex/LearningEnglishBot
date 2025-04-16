@@ -15,7 +15,7 @@ fun Question.questionToString(): String {
 
 fun main() {
     val trainer = try {
-        LearnWordsTrainer(3, 4)
+        LearnWordsTrainer()
     } catch (e: Exception) {
         println("Невозможно загрузить словарь!")
         return
@@ -58,6 +58,7 @@ fun main() {
             "2" -> {
                 println("Статистика")
                 val statistics = trainer.getStatistics()
+                println()
                 println("Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n")
             }
 

@@ -25,7 +25,7 @@ class TelegramBotService(private val botToken: String) {
         return responseGetUpdates.body()
     }
 
-    fun sendMessage(chatId: String, text: String) {
+    fun sendMessage(chatId: Int, text: String) {
         require(text.isNotEmpty() && text.length <= TELEGRAM_TEXT_MESSAGE_LIMIT) { "Сообщение должно содержать от 1 до 4096 символов." }
         val encodedText = java.net.URLEncoder.encode(text, "UTF-8")
         val url = "${URL_API}bot$botToken/sendMessage?chat_id=$chatId&text=$encodedText"
@@ -38,7 +38,7 @@ class TelegramBotService(private val botToken: String) {
         println("Response: ${response.body()}")
     }
 
-    fun sendMenu(chatId: String) {
+    fun sendMenu(chatId: Int) {
         val url = "${URL_API}bot$botToken/sendMessage"
         val sendMenuBody = """
             {
