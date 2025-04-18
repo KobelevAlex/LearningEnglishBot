@@ -18,21 +18,17 @@ fun main(args: Array<String>) {
     while (true) {
         Thread.sleep(2000)
         val updates: String = telegramBot.getUpdates(updateId)
-        val matchResultText = messageTextRegex.find(updates)
-        val matchDataRegex = dataRegex.find(updates)
-        if (matchResultText != null) {
-            val text = matchResultText.groups[1]?.value
-            val newUpdateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
-            updateId = newUpdateId + 1
-            val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
-            val data = matchDataRegex?.groups?.get(1)?.value
-            if (text != null) {
-                telegramBot.sendMessage(chatId, text)
-            }
-            if (text?.lowercase() == START) {
+        val newUpdateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
+        updateId = newUpdateId + 1
+        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
+        val text = messageTextRegex.find(updates)?.groups?.get(1)?.value
+        val data = dataRegex.find(updates)?.groups?.get(1)?.value
+        when {
+            text?.lowercase() == START -> {
                 telegramBot.sendMenu(chatId)
             }
-            if (data?.lowercase() == STATISTICS_CLICKED) {
+
+            data?.lowercase() == STATISTICS_CLICKED -> {
                 val statistics = trainer.getStatistics()
                 val message =
                     "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n"
