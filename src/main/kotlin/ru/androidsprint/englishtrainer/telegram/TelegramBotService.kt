@@ -82,7 +82,7 @@ class TelegramBotService(private val botToken: String) {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         println("Response: ${response.body()}")
     }
-
+    
     fun sendQuestion(chatId: Int, question: Question) {
         val url = "${URL_API}bot$botToken/sendMessage"
         val sendMenuBody = """
