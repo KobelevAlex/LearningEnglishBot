@@ -1,4 +1,7 @@
-package LEB_04
+package ru.androidsprint.englishtrainer.console
+
+import ru.androidsprint.englishtrainer.treaner.LearnWordsTrainer
+import ru.androidsprint.englishtrainer.treaner.Question
 
 fun Question.questionToString(): String {
     return this.variants.mapIndexed { index, word ->
@@ -12,7 +15,7 @@ fun Question.questionToString(): String {
 
 fun main() {
     val trainer = try {
-        LearnWordsTrainer(3, 4)
+        LearnWordsTrainer()
     } catch (e: Exception) {
         println("Невозможно загрузить словарь!")
         return
@@ -55,6 +58,7 @@ fun main() {
             "2" -> {
                 println("Статистика")
                 val statistics = trainer.getStatistics()
+                println()
                 println("Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n")
             }
 
