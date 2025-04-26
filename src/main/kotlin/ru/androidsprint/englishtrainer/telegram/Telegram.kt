@@ -5,6 +5,7 @@ import ru.androidsprint.englishtrainer.treaner.LearnWordsTrainer
 const val STATISTICS_CLICKED = "statistics_clicked"
 const val LEARN_WORDS_CLICKED = "learn_word_clicked"
 const val START = "/start"
+const val CALLBACK_DATA_ANSWER_PREFIX = "answer"
 
 fun main(args: Array<String>) {
     val botToken = args[0]
@@ -15,6 +16,7 @@ fun main(args: Array<String>) {
     val updateIdRegex: Regex = """"update_id":(\d+)""".toRegex()
     val dataRegex: Regex = """"data":"(.+?)"""".toRegex()
     val trainer = LearnWordsTrainer()
+
     while (true) {
         Thread.sleep(2000)
         val updates: String = telegramBot.getUpdates(updateId)
@@ -33,6 +35,14 @@ fun main(args: Array<String>) {
                 val message =
                     "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent}%\n"
                 telegramBot.sendMessage(chatId, message)
+            }
+
+            data?.lowercase() == LEARN_WORDS_CLICKED -> {
+                trainer.checkNextQuestionAndSend(
+                    trainer,
+                    telegramBot,
+                    chatId
+                )
             }
         }
     }

@@ -1,5 +1,6 @@
 package ru.androidsprint.englishtrainer.treaner
 
+import ru.androidsprint.englishtrainer.telegram.TelegramBotService
 import java.io.File
 import java.lang.IllegalStateException
 import java.lang.IndexOutOfBoundsException
@@ -81,6 +82,21 @@ class LearnWordsTrainer(
             correctAnswer = correctAnswer,
         )
         return question
+    }
+
+    fun checkNextQuestionAndSend(
+        trainer: LearnWordsTrainer,
+        telegramBot: TelegramBotService,
+        chatId: Int
+    ) {
+        val question = trainer.getNextQuestion()
+        if (question == null) {
+            val message =
+                "Все слова в словаре выучены\n"
+            telegramBot.sendMessage(chatId, message)
+        } else {
+            telegramBot.sendQuestion(chatId, question)
+        }
     }
 
     fun checkAnswer(userAnswerIndex: Int?): Boolean {
