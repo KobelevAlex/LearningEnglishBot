@@ -27,7 +27,7 @@ class LearnWordsTrainer(
     private val learnedAnswerCount: Int = 3,
     private val countOfQuestionWords: Int = 4,
 ) {
-    private var question: Question? = null
+    var question: Question? = null
     val vocabulary = loadDictionary()
     private fun loadDictionary(): MutableList<Word> {
         try {

@@ -15,6 +15,7 @@ fun main(args: Array<String>) {
     val chatIdRegex: Regex = """"chat":\{"id":(\d+)""".toRegex()
     val updateIdRegex: Regex = """"update_id":(\d+)""".toRegex()
     val dataRegex: Regex = """"data":"(.+?)"""".toRegex()
+    val callbackDataRegex: Regex = """"callback_data":"(.*?)"""".toRegex()
     val trainer = LearnWordsTrainer()
 
     while (true) {
@@ -25,6 +26,9 @@ fun main(args: Array<String>) {
         val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
         val text = messageTextRegex.find(updates)?.groups?.get(1)?.value
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
+        val callbackData = dataRegex.find(updates)?.groups?.get(1)?.value?.substringAfter(
+            CALLBACK_DATA_ANSWER_PREFIX
+        )?.toIntOrNull()
         when {
             text?.lowercase() == START -> {
                 telegramBot.sendMenu(chatId)
@@ -44,6 +48,29 @@ fun main(args: Array<String>) {
                     chatId
                 )
             }
+
+            callbackData != null ->
+                if (trainer.checkAnswer(callbackData)) {
+                    val message =
+                        "Правильно!\n"
+                    telegramBot.sendMessage(chatId, message)
+                    trainer.checkNextQuestionAndSend(
+                        trainer,
+                        telegramBot,
+                        chatId
+                    )
+                } else {
+                    val message = """
+                     Неправильно! ${trainer.question?.correctAnswer?.original}- это ${trainer.question?.correctAnswer?.translate}
+                     Ответ - $callbackData
+                """.trimIndent()
+                    telegramBot.sendMessage(chatId, message)
+                    trainer.checkNextQuestionAndSend(
+                        trainer,
+                        telegramBot,
+                        chatId
+                    )
+                }
         }
     }
 }

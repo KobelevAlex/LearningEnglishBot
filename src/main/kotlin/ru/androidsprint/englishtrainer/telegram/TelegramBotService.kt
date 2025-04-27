@@ -17,11 +17,11 @@ class TelegramBotService(private val botToken: String) {
         .build()
 
     fun Question.inlineKeyboard(): String {
-        return this. variants.mapIndexed { index, variant ->
+        return this.variants.mapIndexed { index, variant ->
             """
         {
             "text": "${variant.translate}",
-            "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}${index + 1}"
+            "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}${index}"
         }
         """.trimIndent()
         }.joinToString(",")
@@ -82,7 +82,7 @@ class TelegramBotService(private val botToken: String) {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
         println("Response: ${response.body()}")
     }
-    
+
     fun sendQuestion(chatId: Int, question: Question) {
         val url = "${URL_API}bot$botToken/sendMessage"
         val sendMenuBody = """
