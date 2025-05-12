@@ -87,18 +87,17 @@ class LearnWordsTrainer(
     }
 
     fun checkNextQuestionAndSend(
-        json:Json,
         trainer: LearnWordsTrainer,
         telegramBot: TelegramBotService,
-        chatId: Long?
+        chatId: Long
     ) {
         val question = trainer.getNextQuestion()
         if (question == null) {
             val message =
                 "Все слова в словаре выучены\n"
-            telegramBot.sendMessage(json, chatId, message)
+            telegramBot.sendMessage(chatId, message)
         } else {
-            telegramBot.sendQuestion(json, chatId, question)
+            telegramBot.sendQuestion(chatId, question)
         }
     }
 

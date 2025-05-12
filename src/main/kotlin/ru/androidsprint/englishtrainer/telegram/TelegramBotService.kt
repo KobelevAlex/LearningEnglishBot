@@ -1,5 +1,6 @@
 package ru.androidsprint.englishtrainer.telegram
 
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import ru.androidsprint.englishtrainer.treaner.Question
@@ -13,6 +14,16 @@ const val TELEGRAM_TEXT_MESSAGE_LIMIT = 4096
 class TelegramBotService(private val botToken: String) {
     companion object {
         const val URL_API = "https://api.telegram.org/"
+    }
+
+    internal val json = Json {
+        ignoreUnknownKeys = true
+    }
+
+    fun responseRezult(lastUpdateId: Long): List<Update> {
+        val responseString: String = getUpdates(lastUpdateId)
+        val response: Response = json.decodeFromString(responseString)
+        return response.rezult
     }
 
     private val httpClient: HttpClient = HttpClient.newBuilder()
@@ -29,7 +40,7 @@ class TelegramBotService(private val botToken: String) {
         }.joinToString(",")
     }
 
-    fun getUpdates(updateId: Long): String {
+    internal fun getUpdates(updateId: Long): String {
         val urlGetUpdates = "${URL_API}bot$botToken/getUpdates?offset=$updateId"
         val client = httpClient
         val requestGetUpdates = HttpRequest.newBuilder()
@@ -39,7 +50,7 @@ class TelegramBotService(private val botToken: String) {
         return responseGetUpdates.body()
     }
 
-    fun sendMessage(json: Json, chatId: Long?, message: String) {
+    fun sendMessage(chatId: Long, message: String) {
         val url = "${URL_API}bot$botToken/sendMessage"
         val requestBody = SendMessageRequest(
             chatId = chatId,
@@ -57,7 +68,7 @@ class TelegramBotService(private val botToken: String) {
         println("Response: ${response.body()}")
     }
 
-    fun sendMenu(json: Json, chatId: Long?) {
+    fun sendMenu(chatId: Long) {
         val url = "${URL_API}bot$botToken/sendMessage"
         val requestBody = SendMessageRequest(
             chatId = chatId,
@@ -83,7 +94,7 @@ class TelegramBotService(private val botToken: String) {
         println("Response: ${response.body()}")
     }
 
-    fun sendQuestion(json: Json, chatId: Long?, question: Question) {
+    fun sendQuestion(chatId: Long, question: Question) {
         val url = "${URL_API}bot$botToken/sendMessage"
         val requestBody = SendMessageRequest(
             chatId = chatId,
