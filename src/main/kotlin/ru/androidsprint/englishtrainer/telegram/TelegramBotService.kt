@@ -3,6 +3,7 @@ package ru.androidsprint.englishtrainer.telegram
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import ru.androidsprint.englishtrainer.treaner.LearnWordsTrainer
 import ru.androidsprint.englishtrainer.treaner.Question
 import java.net.URI
 import java.net.http.HttpClient
@@ -78,6 +79,9 @@ class TelegramBotService(private val botToken: String) {
                     listOf(
                         InlineKeyboard(text = "Изучать слова", callbackData = LEARN_WORDS_CLICKED),
                         InlineKeyboard(text = "Статистика", callbackData = STATISTICS_CLICKED),
+                    ),
+                    listOf(
+                        InlineKeyboard(text = "Сбросить прогресс", callbackData = RESET_CLICKED),
                     )
                 )
             )

@@ -26,16 +26,21 @@ data class Question(
 )
 
 class LearnWordsTrainer(
+    private val fileName: String = "words.txt",
     private val learnedAnswerCount: Int = 3,
     private val countOfQuestionWords: Int = 4,
 ) {
     var question: Question? = null
-    val vocabulary = loadDictionary()
+    private val vocabulary = loadDictionary()
     private fun loadDictionary(): MutableList<Word> {
         try {
+            val wordsFile: File = File(fileName)
+            if (!wordsFile.exists()) {
+                File("words.txt").copyTo(wordsFile)
+            }
             val vocabulary: MutableList<Word> = mutableListOf()
-            val wordsFile: File = File("words.txt")
-            wordsFile.createNewFile()
+
+//            wordsFile.createNewFile()
             if (wordsFile.exists()) {
                 val lines = wordsFile.readLines()
                 for (line in lines) {
@@ -50,10 +55,10 @@ class LearnWordsTrainer(
         }
     }
 
-    private fun saveDictionary(words: MutableList<Word>) {
+    private fun saveDictionary() {
         val wordsFile: File = File("words.txt")
         wordsFile.writeText("")
-        for (word in words) {
+        for (word in vocabulary) {
             wordsFile.appendText("${word.original}|${word.translate}|${word.correctAnswersCount}\n")
         }
     }
@@ -106,11 +111,16 @@ class LearnWordsTrainer(
             val correctAnswerId = it.variants.indexOf(it.correctAnswer)
             if (correctAnswerId == userAnswerIndex) {
                 it.correctAnswer.correctAnswersCount++
-                saveDictionary(vocabulary)
+                saveDictionary()
                 true
             } else {
                 false
             }
         } ?: false
+    }
+
+    fun resetProgress() {
+        vocabulary.forEach { it.correctAnswersCount = 0 }
+        saveDictionary()
     }
 }
