@@ -1,9 +1,11 @@
 package ru.androidsprint.englishtrainer.treaner
 
+import kotlinx.serialization.json.Json
 import ru.androidsprint.englishtrainer.telegram.TelegramBotService
 import java.io.File
 import java.lang.IllegalStateException
 import java.lang.IndexOutOfBoundsException
+
 
 data class Word(
     val original: String,
@@ -27,7 +29,7 @@ class LearnWordsTrainer(
     private val learnedAnswerCount: Int = 3,
     private val countOfQuestionWords: Int = 4,
 ) {
-    private var question: Question? = null
+    var question: Question? = null
     val vocabulary = loadDictionary()
     private fun loadDictionary(): MutableList<Word> {
         try {
@@ -87,7 +89,7 @@ class LearnWordsTrainer(
     fun checkNextQuestionAndSend(
         trainer: LearnWordsTrainer,
         telegramBot: TelegramBotService,
-        chatId: Int
+        chatId: Long
     ) {
         val question = trainer.getNextQuestion()
         if (question == null) {
