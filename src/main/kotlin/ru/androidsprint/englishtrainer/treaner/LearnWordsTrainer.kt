@@ -1,29 +1,8 @@
 package ru.androidsprint.englishtrainer.treaner
 
-import kotlinx.serialization.json.Json
 import ru.androidsprint.englishtrainer.telegram.TelegramBotService
 import java.io.File
-import java.lang.IllegalStateException
-import java.lang.IndexOutOfBoundsException
 
-
-data class Word(
-    val original: String,
-    val translate: String,
-    var correctAnswersCount: Int = 0,
-)
-
-data class Statistics(
-    val listDictionary: List<Word>,
-    val totalCount: Int,
-    val learnedCount: Int,
-    val percent: Int,
-)
-
-data class Question(
-    val variants: List<Word>,
-    val correctAnswer: Word,
-)
 
 class LearnWordsTrainer(
     private val fileName: String = "words.txt",
@@ -39,8 +18,6 @@ class LearnWordsTrainer(
                 File("words.txt").copyTo(wordsFile)
             }
             val vocabulary: MutableList<Word> = mutableListOf()
-
-//            wordsFile.createNewFile()
             if (wordsFile.exists()) {
                 val lines = wordsFile.readLines()
                 for (line in lines) {
