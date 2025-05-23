@@ -76,5 +76,3 @@ fun main(args: Array<String>) {
         lastUpdateId = sortedUpdates.last().updateId + 1
     }
 }
-
-

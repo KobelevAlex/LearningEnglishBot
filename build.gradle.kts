@@ -1,6 +1,8 @@
 plugins {
     kotlin("jvm") version "1.8.10"
     kotlin("plugin.serialization") version "1.8.10"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    application
 }
 
 group = "org.example"
@@ -17,6 +19,10 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("ru.androidsprint.englishtrainer.telegram.TelegramKt")
 }
 
 kotlin {
