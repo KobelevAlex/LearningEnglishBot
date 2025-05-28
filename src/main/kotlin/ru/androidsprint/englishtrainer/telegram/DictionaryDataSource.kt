@@ -33,19 +33,28 @@ import java.sql.*
 //}
 
 fun main() {
-
-    DriverManager.getConnection("jdbc:sqlite:data.db")
-        .use { connection ->
+    try {
+        // Устанавливаем соединение с базой данных SQLite
+        DriverManager.getConnection("jdbc:sqlite:data.db").use { connection ->
+            // Создаем объект для выполнения SQL-запросов
             val statement = connection.createStatement()
+
+            // Создаем таблицу, если она еще не существует
             statement.executeUpdate(
                 """
-                        CREATE TABLE IF NOT EXISTS "words" (
-                    "id" integer PRIMARY KEY,
-                    "text" varchar,
-                    "translate" varchar
+                CREATE TABLE IF NOT EXISTS words (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    text VARCHAR,
+                    translate VARCHAR
                 );
-            """.trimIndent()
+                """.trimIndent()
             )
-            statement.executeUpdate("insert into words values(0, "hello", "привет")")
+
+            // Вставляем запись в таблицу
+            statement.executeUpdate("INSERT INTO words (text, translate) VALUES ('hello', 'привет')")
         }
+    } catch (e: SQLException) {
+        // Обрабатываем исключения и выводим сообщение об ошибке
+        println("Ошибка базы данных: ${e.message}")
+    }
 }
